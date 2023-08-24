@@ -3,7 +3,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import _, api, fields, models
-from odoo.tools import config
+from odoo.tools import config, format_date, float_round
+from odoo.tools.misc import get_lang
 
 
 class SaleOrder(models.Model):
@@ -27,11 +28,14 @@ class SaleOrder(models.Model):
     def _get_timesheet_details(self, timesheet, desc_rule):
         details = []
         if desc_rule[0] == "1":
-            details.append(fields.Date.to_string(timesheet.date))
+            details.append(format(format_date(self.env, timesheet.date)))
         if desc_rule[1] == "1":
+            lang = get_lang(self.env, self.partner_id.lang).code
             details.append(
-                "{} {}".format(timesheet.unit_amount, timesheet.product_uom_id.name)
-            )
+                "{} {}".format(
+                    float_round(timesheet.unit_amount,
+                                precision_rounding=timesheet.product_uom_id.rounding),
+                    timesheet.with_context(lang=lang).product_uom_id.name))
         if desc_rule[2] == "1":
             details.append(timesheet.name)
         return details
@@ -136,8 +140,12 @@ class SaleOrder(models.Model):
                         self._split_aml_by_timesheets(aml, ts_ids, desc_list)
                     else:
                         desc = "\n".join(map(lambda x: str(x) or "", desc_list))
-                        new_name = aml.name + "\n" + desc
-                        aml.write({"name": new_name})
+                        self.env["account.move.line"].create({
+                                "name": desc,
+                                "sequence": aml.sequence,
+                                "display_type": "line_note",
+                                "move_id": aml.move_id.id,
+                            })
 
         return moves
 

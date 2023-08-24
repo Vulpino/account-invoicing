@@ -23,7 +23,7 @@ Timesheet details invoice
     :target: https://runbot.odoo-community.org/runbot/95/15.0
     :alt: Try me on Runbot
 
-|badge1| |badge2| |badge3| |badge4| |badge5| 
+|badge1| |badge2| |badge3| |badge4| |badge5|
 
 This module allows to add timesheets details on invoices.
 
@@ -98,6 +98,10 @@ Contributors
 * `Akretion <https://www.akretion.com>`_:
 
   * Clément Mombereau <clement.mombereau@akretion.com.br>
+
+* `Midgard <https://www.midgard.es>`_:
+
+  * Dani Forga
 
 Maintainers
 ~~~~~~~~~~~
